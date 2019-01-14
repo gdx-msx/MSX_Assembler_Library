@@ -1,4 +1,4 @@
-; Routine: Select the second part of 32kB ROM that starts between 4010h~7FFFh
+; Effect: Select the second part of 32kB ROM that starts between 4010h~7FFFh
 ; Note: Insert these codes before execute codes between 7FFFh~BFFFh. (This is
 ;       the most used routine in MSX Roms.)
 
