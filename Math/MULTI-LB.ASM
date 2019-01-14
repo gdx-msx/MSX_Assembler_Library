@@ -1,4 +1,4 @@
-; Routine: HL = L * B
+; Effect: HL = L * B
 ; Modifies: B, DE, HL
 
 Multi_LB:
