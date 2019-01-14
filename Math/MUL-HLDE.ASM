@@ -1,5 +1,5 @@
 
-; Routine: HL = HL * DE (Rest -> DE)
+; Effect: HL = HL * DE (Rest -> DE)
 ; Modifies: DE, HL
 
 Mul_HLDE:
