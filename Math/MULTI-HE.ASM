@@ -1,5 +1,5 @@
 
-; Routine: HL = H * E
+; Effect: HL = H * E
 ; Modifies: B, DE, HL
 
 Mult_HE:
