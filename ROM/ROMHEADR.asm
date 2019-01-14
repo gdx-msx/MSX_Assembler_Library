@@ -4,7 +4,7 @@
 	org	 4000h	; Address can be 4000h or 8000h only
 
 	db	"AB"	; ID for ROM auto-executed by the system
-	dw	INIT	; 0 if not used
+	dw	INIT	; Replace with 0 if not used
 	dw	0	; STATEMENT
 	dw	0	; DEVICE
 	dw	0	; TEXT
