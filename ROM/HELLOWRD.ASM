@@ -1,4 +1,4 @@
-; Print "Hello world!" from cartridge environment.
+; Effect: Print "Hello world!" from cartridge environment
 ;
 ; Save the assembled file with the name HELLO.COM then
 ; input HELLO under MSX-DOS
