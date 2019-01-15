@@ -1,7 +1,6 @@
 ; Effect: Print "Hello world!" from cartridge environment
 ;
-; Save the assembled file with the name HELLO.COM then
-; input HELLO under MSX-DOS
+; Save the assembled file with the name HELLO.ROM
  
 CHPUT:		equ 0A2h	; Set the address of character output routine of main Rom BIOS
 				; Main Rom is already selected (0000h ~ 3FFFh/7FFFh) when a
