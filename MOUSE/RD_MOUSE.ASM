@@ -56,7 +56,6 @@ WTTR:
 	db	0EDh,055h	; Back if Z80 (RETN on Z80, NOP on R800)
 	rlca
 	rlca
-	add	a,b
 	ld	b,a
 WTTR2:
 	djnz	WTTR2
