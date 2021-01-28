@@ -51,11 +51,11 @@ GTPDL	equ	00DEh	; Get paddle
 GTSTCK	equ	00D5h	; Get joystick status
 GTTRIG	equ	00D8h	; Get trigger button status
 INIFNK	equ	003Eh	; Initialize function key
-INIGRP	equ	0072h	; Initialize graphic mode
-INIMLT	equ	0075h	; Initialize multicolor mode
+INIGRP	equ	0072h	; Initialize graphic mode (SCREEN2)
+INIMLT	equ	0075h	; Initialize multicolor mode (SCREEN3)
 INITIO	equ	003Bh	; Initialize Input/Output
-INITXT	equ	006Ch	; Initialize text 40/80 columns mode
-INIT32	equ	006Fh	; Initialize text 32 columns mode
+INITXT	equ	006Ch	; Initialize text 40/80 columns mode (SCREEN0)
+INIT32	equ	006Fh	; Initialize text 32 columns mode (SCREEN1)
 INLIN	equ	00B1h	; Input line
 ISCNTC	equ	00BAh	; Is control C ?
 ISFLIO	equ	014Ah	; Is file I/O
