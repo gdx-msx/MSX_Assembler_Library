@@ -1,10 +1,10 @@
-; Routine to load a 32kB (4000h~BFFFh) MSX ROM from binary
+; Routine to load a 32kB (4000h~BFFFh) MSX ROM from a binary file
 
 ; Version 1.0 (2026-04) by GDX
 
 ; This program in assembler is a sample to show how to convert a 32KB rom to a single binary file
 
-; When the binary file is bigger than that what is indicated by the header, the rest can be with the BDOS function 27h.
+; When the binary file is bigger than that what is indicated by the header, the rest can be read with the BDOS function 27h.
 
 ; Assembled with zasm cross assembler
 
@@ -37,7 +37,7 @@ BINstart	equ	ROMstart-0AFh	; 0A8h is the length of the loading routine + header 
 
 	org	BINstart
 
-;Binary Header
+; Binary Header
 
 	db	0feh
 	dw	progStart,progEnd+03FFFh,progStart
