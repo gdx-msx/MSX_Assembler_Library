@@ -1,14 +1,15 @@
 ; Routine to load a 32kB (4000h~BFFFh) MSX ROM from a binary file
 
-; Version 1.0 (2026-04) by GDX
+; Version 1.01 (2026-04) by GDX
 
-; This program in assembler is a sample to show how to convert a 32KB rom to a single binary file
+; This program in assembler is a sample to show how to convert a 32KB ROM file to a single binary file
 
 ; When the binary file is bigger than that what is indicated by the header, the rest can be read with the BDOS function 27h.
 
 ; Assembled with zasm cross assembler
 
 ; http://sourceforge.net/projects/zasm/
+; https://k1.spdns.de/
 
 
 VDP.DW	equ	00007h	; First VDP port to write
@@ -22,7 +23,7 @@ RAMAD0	equ	0F341h	; Main-RAM Slot (00000h~03FFFh)
 RAMAD1	equ	0F342h	; Main-RAM Slot (04000h~07FFFh)
 RAMAD2	equ	0F343h	; Main-RAM Slot (08000h~0BFFFh)
 RAMAD3	equ	0F344h	; Main-RAM Slot (0C000h~0FFFFh)
-LINL40	equ	0F3AEh	; SCREEN 8 Width
+LINL40	equ	0F3AEh	; SCREEN 0 width
 RG1SAV	equ	0F3E0h	; VDP register 1 content
 KBUF	equ	0F41Fh	; Temporary value
 MNROM	equ	0FCC1h	; Slot de la Main-ROM
@@ -32,32 +33,31 @@ BDOS	equ	0F37Dh	; BDOS functions
 FILNAM	equ	0F866h	; File name (11 bytes)
 FCBadrs	equ	0F353h	; Content the current FCB address
 
-ROMstart	equ	08500h
 BINstart	equ	ROMstart-0AFh	; 0A8h is the length of the loading routine + header size
 
-	org	BINstart
+	org	08500h-7
 
-; Binary Header
+;Binary Header
 
 	db	0feh
-	dw	progStart,progEnd+03FFFh,progStart
+	dw	progStart,ROMstart+03FFFh,progStart	; 03FFFh is to take in account the half size of the ROM in the binary file
 
 ; Moving the second part of the loader to the page 3
 
 progStart:
 	di
-	ld	hl,def_RAMAD1
-	ld	de,0c500h
-	ld	bc,progEnd-def_RAMAD1
+	ld	hl,SecondPartLDR
+	ld	de,ROMstart+4000h		; 4000h is the half size of the ROM
+	ld	bc,ROMstart-SecondPartLDR
 	ldir
 	ei
-	jp	0c500h
+	jp	ROMstart+4000h
 
 ; Put the first ROM part on the page 1
 
-def_RAMAD1:
+SecondPartLDR:
 
-.phase	0c500h
+.phase	ROMstart+4000h
 
 	ld	a,(RAMAD1)
 	ld	h,40h
@@ -103,9 +103,11 @@ LD_Part2:
 	call	BDOS		; Load the rest of the binary file (16KB) to the page 2
 
 	ld	a,b
-	or	c
 	cp	040h
 	ld	de,ReadError_TXT
+	jr	nz,BCK2BAS	; Jump if readed bytes are not 040xxh
+	xor	a
+	cp	c
 	jr	nz,BCK2BAS	; Jump if readed bytes are not 04000h
 
 	ld	hl,(FCBadrs)	; HL = FCB address
@@ -155,11 +157,11 @@ ReadError_TXT:
 
 .dephase
 
-progEnd:
+ROMstart:
 
-; Add the ROM here with a hexa-editor after assembling the program.
-; The ROM must not contain a call to a slot-changing routine.
-; To remove these calls from the ROM, replace all CD 24 00 by 00 00 00 for example.
+; Add the ROM here with a hexa-editor after assembling the program or with an incbin "RomName.rom".
+; The ROM must not contain a call to a slot-selection routine.
+; To remove these calls from the ROM, replace all CD 24 00 and C3 24 00 by 00 00 00 for example.
 ; See also the page below to remove the protections.
 ; https://www.msx.org/wiki/Konami_game_protections
 ; The ROM won't work if you don't do it.
