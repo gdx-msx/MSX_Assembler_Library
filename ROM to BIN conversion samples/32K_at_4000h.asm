@@ -1,8 +1,8 @@
-; Routine to load a 32kB (4000h~BFFFh) MSX ROM from a binary file
+; Routine to load a 32kB MSX ROM from a binary file
 
 ; Version 1.01 (2026-04) by GDX
 
-; This program in assembler is a sample to show how to convert a 32KB ROM file to a single binary file
+; This program in assembler is a sample to show how to convert a 32KB ROM (4000h~BFFFh) file to a single binary file
 
 ; When the binary file is bigger than that what is indicated by the header, the rest can be read with the BDOS function 27h.
 
@@ -23,7 +23,7 @@ RAMAD0	equ	0F341h	; Main-RAM Slot (00000h~03FFFh)
 RAMAD1	equ	0F342h	; Main-RAM Slot (04000h~07FFFh)
 RAMAD2	equ	0F343h	; Main-RAM Slot (08000h~0BFFFh)
 RAMAD3	equ	0F344h	; Main-RAM Slot (0C000h~0FFFFh)
-LINL40	equ	0F3AEh	; SCREEN 0 width
+LINL40	equ	0F3AEh	; SCREEN 0 width value
 RG1SAV	equ	0F3E0h	; VDP register 1 content
 KBUF	equ	0F41Fh	; Temporary value
 MNROM	equ	0FCC1h	; Slot de la Main-ROM
@@ -33,18 +33,18 @@ BDOS	equ	0F37Dh	; BDOS functions
 FILNAM	equ	0F866h	; File name (11 bytes)
 FCBadrs	equ	0F353h	; Content the current FCB address
 
-BINstart	equ	ROMstart-0AFh	; 0A8h is the length of the loading routine + header size
+ProgStart	equ	ROMstart-0AFh	; 0A8h is the length of the loading routine + header size
 
 	org	08500h-7
 
 ;Binary Header
 
 	db	0feh
-	dw	progStart,ROMstart+03FFFh,progStart	; 03FFFh is to take in account the half size of the ROM in the binary file
+	dw	ProgStart,ROMstart+03FFFh,ProgStart	; 03FFFh is to take in account the half size of the ROM in the binary file
 
 ; Moving the second part of the loader to the page 3
 
-progStart:
+ProgStart:
 	di
 	ld	hl,SecondPartLDR
 	ld	de,ROMstart+4000h		; 4000h is the half size of the ROM

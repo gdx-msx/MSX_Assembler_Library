@@ -2,7 +2,7 @@
 
 ; Version 1.01 (2026-04) by GDX
 
-; This program in assembler is a sample to show how to convert a 16KB rom (8000h~BFFFh) to a single binary file
+; This program in assembler is a sample to show how to convert a 16KB rom (4000h~7FFFh) to a single binary file
 
 ; Assembled with zasm cross assembler
 
@@ -59,34 +59,39 @@ LOOP_DRV:
 
 Statement:
 
-	di
-
 	ld	hl,RomExec
 	ld	de,0c500h+(ProgEnd-ProgStart)	; Destination of the routine that put and run the Rom
 	ld	bc,ProgEnd-RomExec
 	ldir			; Move the routine that put and run the Rom
 
 	jp	0c500h+(ProgEnd-ProgStart)		; Jump to the routine that put and run the Rom
+
 RomExec:
+	di
+
+	ld	a,(RAMAD1)
+	ld	h,40h
+	call	ENASLT		; Select the Main-RAM to MSX page 1
+
 	ld	hl,ProgEnd
+	ld	de,04000h
+	ld	bc,04000h
+	ldir			; Put the ROM at page 1
+
+	ld	hl,04000h
 	ld	de,08000h
 	ld	bc,04000h
-	ldir			; Put the ROM at page 2
+	ldir			; Copy the page 1 to the page 2 (make a mirror)
 
 	xor	a
 	ld	(0c000h),a
 	ld	hl,0c001h
 	ld	(0F676h),hl	; Set user memory to c000h
 
-	ld	a,(RAMAD2)
+	ld	a,(RAMAD1)
 	ld	c,a
 
-	ld	hl,(08002h)
-	jp	(hl)		; Run the ROM
+	ld	hl,(04002h)
+	jp	(hl)
 
 ProgEnd:
-
-; Add the ROM here with a hexa-editor after assembling the program.
-; See also the page below to remove the protections.
-; https://www.msx.org/wiki/Konami_game_protections
-; The ROM won't work if you don't do it.
