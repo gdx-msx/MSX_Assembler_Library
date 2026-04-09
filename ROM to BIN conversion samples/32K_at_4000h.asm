@@ -1,6 +1,6 @@
 ; Routine to load a 32kB MSX ROM from a binary file
 
-; Version 1.01 (2026-04) by GDX
+; Version 1.02 (2026-04) by GDX
 
 ; This program in assembler is a sample to show how to convert a 32KB ROM (4000h~BFFFh) file to a single binary file
 
@@ -19,6 +19,7 @@ ENASLT	equ	00024h	; Slot select
 CHGMOD	equ	0005Fh	; Change screen mode
 RSLREG	equ	00138h	; Read primary Slot REGister
 WSLREG	equ	0013Bh	; Write primary Slot REGister
+
 RAMAD0	equ	0F341h	; Main-RAM Slot (00000h~03FFFh)
 RAMAD1	equ	0F342h	; Main-RAM Slot (04000h~07FFFh)
 RAMAD2	equ	0F343h	; Main-RAM Slot (08000h~0BFFFh)
@@ -29,11 +30,7 @@ KBUF	equ	0F41Fh	; Temporary value
 MNROM	equ	0FCC1h	; Slot de la Main-ROM
 RG1SAV	equ	0F3E0h	; VDP register 1 content
 BDOS	equ	0F37Dh	; BDOS functions
-
-FILNAM	equ	0F866h	; File name (11 bytes)
 FCBadrs	equ	0F353h	; Content the current FCB address
-
-ProgStart	equ	ROMstart-0AFh	; 0A8h is the length of the loading routine + header size
 
 	org	08500h-7
 
@@ -53,6 +50,8 @@ ProgStart:
 	ei
 	jp	ROMstart+4000h
 
+	db	"Ver. 1.02",0	; Don't forget to change the version number here if you update.
+
 ; Put the first ROM part on the page 1
 
 SecondPartLDR:
@@ -68,9 +67,9 @@ SecondPartLDR:
 	ld	bc,04000h
 	ldir
 
-	ld	a,(MNROM)
-	ld	h,40h
-	call	ENASLT		; Select Main-ROM on page 1
+;	ld	a,(MNROM)
+;	ld	h,40h
+;	call	ENASLT		; Select Main-ROM on page 1
 
 ; Second part loading
 
@@ -90,7 +89,7 @@ LD_Part2:
 	add	hl,de
 	ld	e,(hl)
 	inc	hl
-	ld	d,(hl)		; ld	de,(hl)
+	ld	d,(hl)
 	dec	hl
 	ex	de,hl		; HL = Block length to read
 	push	hl
@@ -117,7 +116,7 @@ LD_Part2:
 	call	BDOS		; Close the file
 
 	ld	a,1
-	call	CHGMOD		; Set the SCREEN1 mode
+	call	CHGMOD		; Set the SCREEN1 mode (SCREEN0 mode is preferable for European ROMs)
 
 	ld	b,255
 LOOP_DRV:
@@ -133,12 +132,22 @@ LOOP_DRV:
 	ld	(LINL40),a	; Width 39 when the SCREEN 0 is set
 
 	di
-	ld	a,(RAMAD1)
-	ld	h,40h
-	call	ENASLT		; Select the Main-RAM on the page 1
+;	ld	a,(RAMAD1)
+;	ld	h,40h
+;	call	ENASLT		; Select the Main-RAM on the page 1
 
+	ld	a,(04000h)
+	cp	041h
+	jr	nz,Header2	; Jump if no header
+	ld	a,(04001h)
+	cp	042h
+	jr	nz,Header2	; Jump if no header
+	
 	ld	hl,(04002h)
-	jp	(hl)		; Run the ROM
+	jp	(hl)		; Run the ROM from page 1
+Header2:
+	ld	hl,(08002h)
+	jp	(hl)		; Run the ROM from page 2
 
 BCK2BAS:
 	push	de		; Store error message adresse
