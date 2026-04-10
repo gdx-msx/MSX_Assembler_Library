@@ -88,7 +88,7 @@ Run4000:
 	ld	c,a
 
 	ld	hl,(04002h)
-	jp	(hl)
+	jp	(hl)		; Run the ROM
 
 Run8000:
 	ld	hl,ProgEnd
